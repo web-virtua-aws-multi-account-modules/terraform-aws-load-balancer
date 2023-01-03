@@ -99,11 +99,15 @@ resource "aws_lb" "create_lb" {
 #######################################
 # Target Group
 #######################################
+data "aws_lb" "alb_existing" {
+  arn = var.lb_arn_exists
+}
+
 resource "aws_lb_target_group" "create_lb_target_group" {
   count = length(var.target_groups)
 
   name                               = var.target_groups[count.index].name != null ? var.target_groups[count.index].name : "${var.name_prefix}-tg-${count.index + 1}"
-  vpc_id                             = var.target_groups[count.index].vpc_id != null ? var.target_groups[count.index].vpc_id : aws_lb.create_lb[0].vpc_id
+  vpc_id                             = var.target_groups[count.index].vpc_id != null ? var.target_groups[count.index].vpc_id : try(data.aws_lb.alb_existing.vpc_id, aws_lb.create_lb[0].vpc_id)
   port                               = var.target_groups[count.index].port
   protocol                           = var.target_groups[count.index].protocol
   target_type                        = var.target_groups[count.index].target_type
