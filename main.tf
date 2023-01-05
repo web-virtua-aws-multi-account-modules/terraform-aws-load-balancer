@@ -19,7 +19,7 @@ locals {
 
   listeners_normalized = flatten([
     for i, target_group in var.target_groups != null ? var.target_groups : [] : [
-      for listener in target_group.listeners : [
+      for listener in target_group.listeners != null ? target_group.listeners : [] : [
         {
           target_group_index = i
           default_actions    = listener.default_actions
@@ -35,7 +35,7 @@ locals {
 
   targets_attachment_normalized = flatten([
     for i, target_group in var.target_groups != null ? var.target_groups : [] : [
-      for target in target_group.targets_attachment : [
+      for target in target_group.targets_attachment != null ? target_group.targets_attachment : [] : [
         {
           target_group_index = i
           target_id          = target.target_id
